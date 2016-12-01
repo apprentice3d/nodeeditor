@@ -7,6 +7,8 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "Connection.hpp"
 
+#include "NodeData.hpp"
+
 ConnectionStyle ConnectionPainter::connectionStyle;
 
 ConnectionPainter::
@@ -53,12 +55,40 @@ getPainterStroke(ConnectionGeometry const& geom)
   return stroker.createStroke(result);
 }
 
+#include <limits>
+
+#include <QDebug>
+
 
 void
 ConnectionPainter::
 paint(QPainter* painter,
       std::shared_ptr<Connection> const &connection)
 {
+
+  NodeDataType dataType = connection->dataType();
+
+  std::size_t hash = qHash(dataType.id);
+
+  //double range = (0xFFFFFF - 0x080808);
+  std::size_t range = 0xFFFFFF;
+
+  qDebug() << "HASH: " << hash;
+
+  double ratio = (double)hash / std::numeric_limits<std::size_t>::max();
+
+  qDebug() << "RATIO: " << ratio;
+
+  //std::size_t hexColor = 0x080808 + hash % range; //  * ratio;
+  std::size_t hexColor = hash % range; //  * ratio;
+  QColor baseColor = QColor::fromRgb((hexColor >> 16),
+                                     (hexColor >> 8) & 0xFF,
+                                     (hexColor) & 0xFF);
+
+  baseColor = baseColor.lighter(120);
+
+  qDebug() << "COLOR " << baseColor;
+
   ConnectionGeometry const& geom =
     connection->connectionGeometry();
 
@@ -126,7 +156,8 @@ paint(QPainter* painter,
     if (selected)
       p.setColor(connectionStyle.SelectedColor);
     else
-      p.setColor(connectionStyle.NormalColor);
+      //p.setColor(connectionStyle.NormalColor);
+      p.setColor(baseColor);
 
     if (state.requiresPort())
     {

@@ -15,7 +15,7 @@ public:
 
   NodeDataType
   type() const override
-  { return NodeDataType {"MyNodeData", "My Node Data"}; }
+  { return NodeDataType {"MyNodeDatax", "My Node Data"}; }
 };
 
 class SimpleNodeData : public NodeData
@@ -24,7 +24,7 @@ public:
 
   NodeDataType
   type() const override
-  { return NodeDataType {"SimpleData", "Simple Data"}; }
+  { return NodeDataType {"SimpleDatax", "Simple Data"}; }
 };
 
 //------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ public:
         break;
 
       case PortType::Out:
-        result = 1;
+        result = 2;
 
       default:
         break;
@@ -106,7 +106,16 @@ public:
         break;
 
       case PortType::Out:
-        return MyNodeData().type();
+        switch (portIndex)
+        {
+          case 0:
+            return MyNodeData().type();
+            break;
+
+          case 1:
+            return SimpleNodeData().type();
+            break;
+        }
         break;
 
       default:
